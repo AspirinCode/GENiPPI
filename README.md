@@ -2,7 +2,7 @@
 Molecular generative framework for protein-protein interface inhibitors
 
 ## Acknowledgements
-We thank the authors of LigDream: Shape-Based Compound Generation for releasing their code. The code in this repository is based on their source code release (https://github.com/compsciencelab/ligdream). If you find this code useful, please consider citing their work.
+The code in this repository is based on their source code release (https://github.com/AspirinCode/iPPIGAN and https://github.com/kiharalab/GNN_DOVE). If you find this code useful, please consider citing their work.
 
 ## Requirements
 ```python
@@ -66,4 +66,7 @@ Code is released under GNU AFFERO GENERAL PUBLIC LICENSE.
 
 
 ## Cite:
+
+
+
 
