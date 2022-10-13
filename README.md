@@ -27,7 +27,7 @@ http://sobereva.com/multiwfn/
 ```python
 
 #the training model
-python train.py
+python train_wgan.py
 
 ```
 
@@ -39,6 +39,10 @@ For the generation stage the model files are available. It is possible to use th
 novel compound generation please follow notebook:
 
 ```python
+python gen_wgan.py
+
+or
+
 GENiPPI_generate.ipynb
 ```
 
