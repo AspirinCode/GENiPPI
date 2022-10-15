@@ -22,7 +22,10 @@ https://github.com/rdkit/rdkit
 
 https://github.com/Acellera/htmd
 
+https://github.com/Acellera/moleculekit
+
 http://sobereva.com/multiwfn/
+
 
 ## Training
 
