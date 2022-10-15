@@ -29,8 +29,23 @@ http://sobereva.com/multiwfn/
 ```python
 
 #the training model
-python train.py
+# 0 : train
+python train.py [File Index] 0
 
+#example
+python train.py 1 0
+python train.py 2 0
+...
+
+#fine-tuning
+# 1 : fine tuning
+python train.py [File Index] 1
+
+#example
+python train.py 2 1
+python train.py 3 1
+python train.py 4 1
+...
 ```
 
 For the generation stage the model files are available. It is possible to use the ones that are generated during the training step or you can download the ones that we have already generated model files from Google Drive. 
