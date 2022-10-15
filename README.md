@@ -24,10 +24,12 @@ https://github.com/Acellera/htmd
 http://sobereva.com/multiwfn/
 
 ## Training
+
+
 ```python
 
 #the training model
-python train_wgan.py
+python train.py
 
 ```
 
