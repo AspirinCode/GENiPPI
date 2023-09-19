@@ -2,6 +2,11 @@
 ## Molecular generative framework for protein-protein interface inhibitors
 Protein-protein interactions (PPIs) play a vital role in many biochemical processes and life processes. Because abnormal PPIs are associated with various diseases, the regulation of PPIs is of potential clinical significance. PPIs sites and their compounds targeting PPIs have very different physicochemical properties compared to traditional binding pockets and drugs, which makes targeting PPIs highly challenging. Although many excellent structure-based molecular generative models have been proposed, molecular generative models that consider structural features of protein-protein complexes or interface hotspot residues are still missing. Here we propose the conditional molecular generative framework based on protein-protein interaction interface (GENiPPI), that can integrate graph attention networks and long short-term memory through conditional wasserstein generative adversarial networks. As demonstrated by the condition evaluation, GENiPPI is an effective architecture that captures the implicit relationship between the PPIs interface and the active molecules, and generates novel molecules that target the PPIs interface. Furthermore, experiments with generative design in the low-data landscape of PPI interface inhibitor design show that GENiPPI generates drug-like molecules with diversity and suitable binding affinity.
 
+
+## Framework of GENiPPI
+![Model Architecture of GENiPPI](https://github.com/AspirinCode/GENiPPI/blob/latest_branch/figure/GENiPPI_framework.jpg)
+
+
 ## Acknowledgements
 The code in this repository is based on their source code release (https://github.com/AspirinCode/iPPIGAN and https://github.com/kiharalab/GNN_DOVE). If you find this code useful, please consider citing their work.
 
