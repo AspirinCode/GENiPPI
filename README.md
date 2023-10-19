@@ -1,4 +1,5 @@
 [![License: GNU](https://img.shields.io/badge/License-GNU-yellow)](https://github.com/AspirinCode/GENiPPI)
+[![bioRxiv](https://img.shields.io/badge/bioRxiv%202023.10.10.557742-green)](https://doi.org/10.1101/2023.10.10.557742)
 
 # GENiPPI
 ## An interface-based molecular generative framework for protein-protein interaction inhibitors
