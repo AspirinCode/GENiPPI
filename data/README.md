@@ -12,7 +12,7 @@
 | CREBBP |	CREBBP, SRC1 interaction domain-like |	H4 |	CHEMBL5747 |	5GH9 |
 | EphA4 |	protein−tyrosine kinase |	Ephrin ligands |	CHEMBL3988 |	3GXU | 
 | induced myeloid leukemia cell differentiation protein Mcl-1	| Bcl-2 inhibitors of programmed cell death |	Bax	| CHEMBL4361 |	3PK1 |
-| menin |	menin	MLL |	CHEMBL2093861 |	4GQ6 |
+| menin |	menin |	MLL |	CHEMBL2093861 |	4GQ6 |
 | XIAP |	inhibitor of apoptosis repeat |	SMAC |	CHEMBL4198 |	2OPZ |
 
 
