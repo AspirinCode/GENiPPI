@@ -9,7 +9,7 @@ Protein-protein interactions (PPIs) play a crucial role in many biochemical proc
 
 
 ## Framework of GENiPPI
-![Model Architecture of GENiPPI](https://github.com/AspirinCode/GENiPPI/blob/latest_branch/figure/GENiPPI_framework.jpg)
+![Model Architecture of GENiPPI](https://github.com/AspirinCode/GENiPPI/blob/latest_branch/figure/GENiPPI_framework.png)
 
 
 ## Acknowledgements
