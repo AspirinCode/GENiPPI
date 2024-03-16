@@ -1,9 +1,4 @@
-## training data
-
-| 标题 | 标题 | 标题 |
-| ---- | ---- | ---- |
-| 文本 | 文本 | 文本 |
-| 文本 | 文本 | 文本 |
+## Training data
 
 
 
@@ -15,11 +10,6 @@
 | target name |	target family |	target partner | target ChEMBL ID |	PDB ID |
 | ------ | :---------- | ------ | ------ | ------ |
 |E3ubiquitin-protein ligase Mdm2 |	SWIB/Mdm2 domain-like |	p53 |	CHEMBL5023 |	1T4F |
+|apoptosis regulator Bcl-2 |	Bcl-2 inhibitors of programmed cell death |	Bax |	CHEMBL4860	| 2XA0 |
 
-
-| Datasets |  Benchmarks | Drug-likeness| Evaluation metrics  |
-| ------ | :---------- | ------ | ------ |
-| [Datasets](#datasets) | [Benchmarks](#benchmarks) | [QED](#qed) | [SAscore](#sascore) |
-|  |  | [QEPPI](#qeppi) | [RAscore](#rascore) |
-|  |  |  | [Evaluation metrics](#evaluation-metrics) |
 
