@@ -2,11 +2,6 @@
 
 
 
-
-
-| Menu | Menu | Menu | Menu |
-| ------ | :---------- | ------ | ------ |
-
 | target name |	target family |	target partner | target ChEMBL ID |	PDB ID |
 | ------ | :---------- | ------ | ------ | ------ |
 | E3ubiquitin-protein ligase Mdm2 |	SWIB/Mdm2 domain-like |	p53 |	CHEMBL5023 |	1T4F |
