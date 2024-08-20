@@ -404,6 +404,3 @@ class WGAN_GP(object):
         while True:
             for i, data  in tqdm(enumerate(data_loader)):
                 yield data
-
-
- 
