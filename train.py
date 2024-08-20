@@ -1,5 +1,6 @@
-# Copyright (C) 2023 by mao jiashun and wang jianming
+# Copyright (C) 2024 by mao jiashun and wang jianming
 # Copying and distribution is allowed under AGPLv3 license
+
 import os
 import torch
 import torch.nn as nn
