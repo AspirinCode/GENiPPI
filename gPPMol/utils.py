@@ -106,8 +106,3 @@ def length_func(list_or_tensor):
     if type(list_or_tensor)==list:
         return len(list_or_tensor)
     return list_or_tensor.shape[0]
-
-
-
-
-
