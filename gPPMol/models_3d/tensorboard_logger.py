@@ -35,3 +35,5 @@ class Logger(object):
         """Log a histogram of the tensor of values."""
         with self.writer.as_default():
             tf.summary.histogram('{}'.format(tag), values, buckets=bins, step=step)
+
+
