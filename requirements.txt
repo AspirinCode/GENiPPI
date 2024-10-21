@@ -1,0 +1,16 @@
+joblib==1.1.1
+keras==3.6.0
+keras_nightly==2.5.0.dev2021032900
+matplotlib==3.3.4
+moleculekit==0.6.7
+numpy==1.19.5
+pandas==1.1.5
+rdkit==2024.3.5
+scikit_learn==1.5.2
+scipy==1.5.3
+tensorflow==2.17.0
+tensorflow_gpu==2.5.0
+torch==1.7.1+cu110
+torchio==0.18.76
+torchvision==0.8.2+cu110
+tqdm==4.64.0
