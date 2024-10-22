@@ -122,11 +122,15 @@ Another QEPPI publication (conference paper)
 
 ### Molecular shape
 
-**calculate NPR descriptors**
+**calculate NPR and PMI descriptors**
 
 ```python
 Chem.Descriptors3D.NPR1(mol)
 Chem.Descriptors3D.NPR2(mol)
+
+Chem.rdMolDescriptors.CalcPMI1
+Chem.rdMolDescriptors.CalcPMI2
+Chem.rdMolDescriptors.CalcPMI3
 ```
 
 https://greglandrum.github.io/rdkit-blog/posts/2022-06-22-variability-of-pmi-descriptors.html
