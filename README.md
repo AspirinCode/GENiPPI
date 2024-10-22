@@ -37,6 +37,28 @@ https://github.com/Acellera/moleculekit
 http://sobereva.com/multiwfn/
 
 
+## Installation
+
+```python
+
+conda create --name GENiPPI python=3.6 conda
+
+pip install -r requirements.txt
+
+OR
+
+conda config --add channels acellera
+conda install -c acellera htmd=1.13.9
+
+#pytorch==1.7.1
+conda install pytorch==1.7.1 torchvision==0.8.2 torchaudio==0.7.2 cudatoolkit=11.0 -c pytorch
+#keras
+conda install keras==2.2.2
+
+```
+
+
+
 ## Training
 
 
