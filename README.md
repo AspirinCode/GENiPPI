@@ -115,6 +115,33 @@ Another QEPPI publication (conference paper)
 
 *  Kosugi T, Ohue M. Quantitative estimate of protein-protein interaction targeting drug-likeness. In Proceedings of The 18th IEEE International Conference on Computational Intelligence in Bioinformatics and Computational Biology (CIBCB 2021), 2021. doi: 10.1109/CIBCB49929.2021.9562931 (PDF) * © 2021 IEEE. Personal use of this material is permitted. Permission from IEEE must be obtained for all other uses, in any current or future media, including reprinting/republishing this material for advertising or promotional purposes, creating new collective works, for resale or redistribution to servers or lists, or reuse of any copyrighted component of this work in other works.
 
+
+
+## Analysis
+
+
+
+
+
+### TMAP visualization of chemical space
+
+https://github.com/reymond-group/mhfp
+
+https://github.com/reymond-group/faerun-python
+
+
+
+```python
+
+pip install mhfp
+pip install faerun
+
+```
+
+**reference code**  
+https://tmap.gdb.tools/?ref=gdb.unibe.ch#ex-chembl
+
+
 ## License
 Code is released under GNU AFFERO GENERAL PUBLIC LICENSE.
 
