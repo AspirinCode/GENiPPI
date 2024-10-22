@@ -120,7 +120,26 @@ Another QEPPI publication (conference paper)
 ## Analysis
 
 
+### Molecular shape
 
+**calculate NPR descriptors**
+
+```python
+Chem.Descriptors3D.NPR1(mol)
+Chem.Descriptors3D.NPR2(mol)
+```
+
+https://greglandrum.github.io/rdkit-blog/posts/2022-06-22-variability-of-pmi-descriptors.html
+
+
+**calculate PBF descriptors**
+
+```python
+Chem.rdMolDescriptors.CalcPBF(mol)
+```
+
+**reference**  
+Firth, N.C., Brown, N. and Blagg, J., 2012. Plane of best fit: a novel method to characterize the three-dimensionality of molecules. Journal of chemical information and modeling, 52(10), pp.2516-2525.
 
 
 ### TMAP visualization of chemical space
