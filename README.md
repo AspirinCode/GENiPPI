@@ -1,5 +1,7 @@
 [![License: GNU](https://img.shields.io/badge/License-GNU-yellow)](https://github.com/AspirinCode/GENiPPI)
 [![bioRxiv](https://img.shields.io/badge/bioRxiv%202023.10.10.557742-green)](https://doi.org/10.1101/2023.10.10.557742)
+[![Zenodo](https://img.shields.io/badge/10.5281%2Fzenodo.13968591-gray)](https://zenodo.org/records/13968592)
+
 
 # GENiPPI
 
