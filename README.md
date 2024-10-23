@@ -42,10 +42,14 @@ http://sobereva.com/multiwfn/
 ## Installation
 
 ```python
+conda env create -f environment.yml
+
+OR
 
 conda create --name GENiPPI python=3.6 conda
 
 pip install -r requirements.txt
+
 
 OR
 
