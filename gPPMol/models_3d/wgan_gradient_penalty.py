@@ -1,3 +1,10 @@
+# Copyright (C) 2019 Computational Science Lab, UPF <http://www.compscience.org/>
+# Copying and distribution is allowed under AGPLv3 license
+# 
+# This script implements a Wasserstein GAN (WGAN) with Gradient Penalty (WGAN-GP)
+# for generating 3D voxel data using a Generator and Discriminator model.
+# It includes functions for training the GAN, evaluating models, and saving/loading weights.
+
 import torch
 import torch.nn as nn
 import torch.optim as optim
@@ -6,29 +13,41 @@ from torch import autograd
 import time as t
 import matplotlib.pyplot as plt
 import sys
-plt.switch_backend('agg')
-sys.path.append('/home/jmwang/WorkSpace/GENiPPI/gPPMol/models_3d')  # Custom path for loading models
+plt.switch_backend('agg')  # Switch to non-interactive mode for saving plots
+sys.path.append('/home/jmwang/WorkSpace/GENiPPI/gPPMol/models_3d')  # Add custom path for models
 import os
 from itertools import chain
 from torchvision import utils
-from tensorboard_logger import Logger  # Logger for tensorboard visualization
+from tensorboard_logger import Logger  # Logger for TensorBoard visualization
 from tqdm import tqdm  # Progress bar for loops
 import numpy as np
 
-SAVE_PER_TIMES = 1000  # Interval for saving model
+SAVE_PER_TIMES = 1000  # Interval for saving models during training
 
-# Define Generator model
+# Generator Model Definition
 class Generator(torch.nn.Module):
+    """
+    Generator model for 3D voxel data generation.
+    
+    This model uses ConvTranspose3d layers to upsample a latent vector into a
+    3D voxel grid with specified output channels.
+    """
     def __init__(self, channels, is_cuda):
+        """
+        Initializes the generator model.
+
+        Args:
+            channels (int): Number of output channels (i.e., the depth of the voxel grid).
+            is_cuda (bool): Flag to indicate whether to use GPU acceleration.
+        """
         super().__init__()
         self.use_cuda = is_cuda  # Store if CUDA is being used
         
         # Generator architecture using ConvTranspose3d layers
-        # The input to the generator is a latent vector of size 100 (here it's reduced to 10 in_channels)
         self.main_module = nn.Sequential(
             # First layer: ConvTranspose3d (upsample) from 10 to 1024 channels
             nn.ConvTranspose3d(in_channels=10, out_channels=1024, kernel_size=4, stride=1, padding=0),
-            nn.BatchNorm3d(num_features=1024),  # Normalize output to stabilize training
+            nn.BatchNorm3d(num_features=1024),  # Normalize to stabilize training
             nn.ReLU(True),  # Activation
             
             # Second layer: ConvTranspose3d from 1024 to 512 channels
@@ -48,6 +67,17 @@ class Generator(torch.nn.Module):
         self.output = nn.Tanh()  # Output activation function
 
     def forward(self, x, c2, only_y):
+        """
+        Forward pass for generating a 3D voxel grid from a latent vector.
+
+        Args:
+            x (torch.Tensor): Latent vector input (noise).
+            c2 (torch.Tensor): Condition tensor for conditional generation.
+            only_y (list): List to control which condition to apply.
+
+        Returns:
+            torch.Tensor: Generated 3D voxel grid.
+        """
         # Prepare condition tensor c2 (which will be concatenated with input x)
         c2 = c2.view(c2.shape[0], 4, 4, 4)  # Reshape c2 to match input size
         
@@ -77,48 +107,87 @@ class Generator(torch.nn.Module):
         return self.output(x)  # Apply final output activation
 
 
-# Define Discriminator model
+# Discriminator Model Definition
 class Discriminator(torch.nn.Module):
+    """
+    Discriminator model for distinguishing between real and generated 3D voxel grids.
+
+    This model uses Conv3d layers to downsample 3D voxel data and output a scalar prediction.
+    """
     def __init__(self, channels):
+        """
+        Initializes the discriminator model.
+
+        Args:
+            channels (int): Number of input channels (depth of the voxel grid).
+        """
         super().__init__()
         
         # Discriminator architecture using Conv3d layers
         self.main_module = nn.Sequential(
-            # First layer: Conv3d from 'channels' to 256 with InstanceNorm and LeakyReLU
             nn.Conv3d(in_channels=channels, out_channels=256, kernel_size=4, stride=2, padding=1),
             nn.InstanceNorm3d(256, affine=True),  # Use instance normalization
             nn.LeakyReLU(0.2, inplace=True),  # Activation function
 
-            # Second layer: Conv3d from 256 to 512 with InstanceNorm and LeakyReLU
             nn.Conv3d(in_channels=256, out_channels=512, kernel_size=4, stride=2, padding=1),
             nn.InstanceNorm3d(512, affine=True),
             nn.LeakyReLU(0.2, inplace=True),
 
-            # Third layer: Conv3d from 512 to 1024 with InstanceNorm and LeakyReLU
             nn.Conv3d(in_channels=512, out_channels=1024, kernel_size=4, stride=2, padding=1),
             nn.InstanceNorm3d(1024, affine=True),
             nn.LeakyReLU(0.2, inplace=True)
         )
 
         self.output = nn.Sequential(
-            # Final layer: Conv3d to reduce to a single scalar value (not a probability since we use WGAN-GP)
             nn.Conv3d(in_channels=1024, out_channels=1, kernel_size=4, stride=1, padding=0)
         )
 
     def forward(self, x):
-        # Pass input through the main module and return the output
+        """
+        Forward pass to classify a 3D voxel grid as real or generated.
+
+        Args:
+            x (torch.Tensor): Input voxel grid.
+
+        Returns:
+            torch.Tensor: Output scalar prediction.
+        """
         x = self.main_module(x)
         return self.output(x)
 
     def feature_extraction(self, x):
-        # Extract features from the main module and flatten the output for further use (e.g., GAN features)
+        """
+        Extracts features from the discriminator for use in feature matching or evaluation.
+
+        Args:
+            x (torch.Tensor): Input voxel grid.
+
+        Returns:
+            torch.Tensor: Flattened feature vector.
+        """
         x = self.main_module(x)
         return x.view(-1, 1024 * 4 * 4 * 4)  # Flatten output
 
 
-# Define WGAN with Gradient Penalty training class
+# WGAN with Gradient Penalty training class
 class WGAN_GP(object):
+    """
+    WGAN with Gradient Penalty (WGAN-GP) for training a generator and discriminator to generate 3D voxel data.
+    """
     def __init__(self, channels, is_cuda, generator_iters, gnn_interface_model, encoder, decoder, device, batch_size=64):
+        """
+        Initializes the WGAN-GP model.
+
+        Args:
+            channels (int): Number of input/output channels for generator and discriminator.
+            is_cuda (bool): Flag to enable CUDA.
+            generator_iters (int): Number of generator iterations during training.
+            gnn_interface_model: GNN model for additional feature generation.
+            encoder: Encoder model for captions.
+            decoder: Decoder model for captions.
+            device (torch.device): Device to run the training (CPU/GPU).
+            batch_size (int): Batch size for training.
+        """
         print("WGAN_GradientPenalty init model.")
         self.G = Generator(channels, is_cuda)  # Initialize Generator
         self.D = Discriminator(channels)  # Initialize Discriminator
@@ -128,8 +197,7 @@ class WGAN_GP(object):
         self.device = device  # Device (CPU/GPU)
         self.C = channels  # Number of channels
 
-        # Set up CUDA if available
-        self.check_cuda(is_cuda)
+        self.check_cuda(is_cuda)  # Set up CUDA if available
 
         # WGAN-GP hyperparameters and optimizer setup
         self.learning_rate = 1e-4  # Learning rate for both generator and discriminator
@@ -137,81 +205,101 @@ class WGAN_GP(object):
         self.b2 = 0.999
         self.batch_size = batch_size  # Batch size
 
-        # RMSProp optimizers for both generator and discriminator
+        # Optimizers for generator and discriminator
         self.d_optimizer = torch.optim.RMSprop(self.D.parameters(), lr=self.learning_rate)
         self.g_optimizer = torch.optim.RMSprop(list(self.G.parameters()) + list(self.gnn_interface_model.parameters()), 
                                                lr=self.learning_rate)
 
-        # Logger for TensorBoard
+        # Logger for TensorBoard visualization
         self.logger = Logger('./logs')
         self.logger.writer.flush()
-        self.number_of_images = 10
 
-        self.generator_iters = generator_iters  # Number of iterations to run generator
-        self.critic_iter = 50  # Number of iterations to update critic (discriminator) before generator
-        self.lambda_term = 10  # Lambda for gradient penalty (WGAN-GP specific)
+        self.generator_iters = generator_iters  # Number of generator iterations
+        self.critic_iter = 50  # Number of critic iterations per generator update
+        self.lambda_term = 10  # Lambda for gradient penalty
 
-    # Utility function to return torch Variables (with CUDA support if available)
     def get_torch_variable(self, arg):
+        """
+        Utility function to return torch Variables (with CUDA support if available).
+
+        Args:
+            arg: Tensor to be converted to Variable.
+
+        Returns:
+            torch.Variable: Converted Variable with GPU support if enabled.
+        """
         if self.cuda:
             return Variable(arg).cuda(self.cuda_index)
         else:
             return Variable(arg)
 
-    # Check and enable CUDA if available
     def check_cuda(self, cuda_flag=False):
+        """
+        Checks and enables CUDA if available.
+
+        Args:
+            cuda_flag (bool): Flag indicating whether CUDA should be enabled.
+
+        Returns:
+            None
+        """
         print(cuda_flag)
         if cuda_flag:
             self.cuda_index = 0
             self.cuda = True
             self.D.cuda(self.cuda_index)
             self.G.cuda(self.cuda_index)
-            print("Cuda enabled flag: {}".format(self.cuda))
+            print(f"CUDA enabled: {self.cuda}")
         else:
             self.cuda = False
 
-    # Training function
     def train(self, train_loader, H, A1, A2, V, Atom_count):
-        self.t_begin = t.time()  # Start time of training
+        """
+        Trains the WGAN-GP model.
 
-        # Infinite data generator
+        Args:
+            train_loader: DataLoader for training.
+            H, A1, A2, V, Atom_count: GNN input tensors.
+
+        Returns:
+            None
+        """
+        self.t_begin = t.time()  # Start time for training
+
+        # Infinite data loader
         self.data = self.get_infinite_batches(train_loader)
 
-        one = torch.tensor(1, dtype=torch.float)  # Label for real images
-        mone = one * -1  # Label for fake images
+        # Labels for real and fake images
+        one = torch.tensor(1, dtype=torch.float)
+        mone = one * -1
 
         if self.cuda:
             one = one.cuda(self.cuda_index)
             mone = mone.cuda(self.cuda_index)
 
-        # Loss function for captions (cross-entropy)
-        criterion = nn.CrossEntropyLoss()  # Ignore padding index in captions if necessary
+        # Loss function for captions
+        criterion = nn.CrossEntropyLoss()
         caption_params = list(self.decoder.parameters()) + list(self.encoder.parameters())
         caption_optimizer = torch.optim.Adam(caption_params, lr=0.001)
 
         caption_start = 10000  # Start training captions after certain iterations
 
         for g_iter in range(self.generator_iters):
-            # Update discriminator (critic) multiple times per generator update
+            # Update discriminator multiple times per generator update
             for p in self.D.parameters():
                 p.requires_grad = True
 
-            d_loss_real = 0
-            d_loss_fake = 0
-            Wasserstein_D = 0  # Wasserstein distance for WGAN-GP
-
-            # Train the discriminator multiple times (critic iterations)
+            # Train discriminator (critic) multiple times
             for d_iter in range(self.critic_iter):
                 self.D.zero_grad()
 
-                # Get a batch of training data
+                # Get batch data
                 (images, condition, y, only_y, caption, lengths) = self.data.__next__()
 
-                # Ensure full batch size for training
-                if (images.size()[0] != self.batch_size):
+                if images.size()[0] != self.batch_size:
                     continue
 
-                # GNN model interface for conditioning
+                # Process GNN input and get conditional output
                 H_new = Variable(H.to(self.device))
                 A1_new = Variable(A1.to(self.device))
                 A2_new = Variable(A2.to(self.device))
@@ -230,20 +318,19 @@ class WGAN_GP(object):
                 d_loss_fake = self.D(fake_images).mean()
                 d_loss_fake.backward(one)
 
-                # Compute and apply gradient penalty (WGAN-GP specific)
+                # Apply gradient penalty (WGAN-GP specific)
                 gradient_penalty = self.calculate_gradient_penalty(images.data, fake_images.data)
                 gradient_penalty.backward()
 
-                # Update discriminator loss
                 d_loss = d_loss_fake - d_loss_real + gradient_penalty
                 Wasserstein_D = d_loss_real - d_loss_fake
                 self.d_optimizer.step()
 
                 print(f'Discriminator iteration: {d_iter}/{self.critic_iter}, loss_fake: {d_loss_fake}, loss_real: {d_loss_real}')
 
-            # Update generator after discriminator
+            # Generator update
             for p in self.D.parameters():
-                p.requires_grad = False  # Avoid computation for discriminator gradients
+                p.requires_grad = False
 
             self.G.zero_grad()
 
@@ -257,7 +344,7 @@ class WGAN_GP(object):
 
             print(f'Generator iteration: {g_iter}/{self.generator_iters}, g_loss: {g_loss}')
 
-            # Autoencoder training (for captions)
+            # Train autoencoder for captions if applicable
             if g_iter >= caption_start:
                 recon_batch = Variable(recon_batch.to(self.device))
                 captions = Variable(caption.to(self.device))
@@ -273,13 +360,11 @@ class WGAN_GP(object):
 
                 print("cap_loss:", cap_loss.data.item())
 
-            # Save model at specific intervals
+            # Save models at specific intervals
             if (g_iter) % SAVE_PER_TIMES == 0:
                 self.save_model()
-
-                time = t.time() - self.t_begin
-                print("Generator iter: {}".format(g_iter))
-                print("Time {}".format(time))
+                time_elapsed = t.time() - self.t_begin
+                print(f"Generator iter: {g_iter}, Time {time_elapsed}")
 
                 # TensorBoard logging
                 info = {
@@ -289,18 +374,28 @@ class WGAN_GP(object):
                     'Loss D Real': d_loss_real.data,
                     'Loss D Fake': d_loss_fake.data
                 }
-
                 for tag, value in info.items():
                     self.logger.scalar_summary(tag, value.cpu(), g_iter + 1)
 
         self.t_end = t.time()
-        print('Time of training-{}'.format((self.t_end - self.t_begin)))
-
-        # Save the final model after training
+        print(f'Time of training: {self.t_end - self.t_begin}')
         self.save_model()
 
-    # Function to evaluate the trained model (optional)
+    # Function to evaluate trained model
     def evaluate(self, test_loader, D_model_path, G_model_path, H, A1, A2, V, Atom_count, probab=True):
+        """
+        Evaluates the WGAN-GP model.
+
+        Args:
+            test_loader: DataLoader for evaluation.
+            D_model_path: Path to discriminator weights.
+            G_model_path: Path to generator weights.
+            H, A1, A2, V, Atom_count: GNN input tensors.
+            probab (bool): Whether to use probabilistic sampling.
+
+        Returns:
+            captions1, captions2: Generated captions (if applicable).
+        """
         self.load_model(D_model_path, G_model_path)
 
         H_new = Variable(H.to(self.device))
@@ -328,18 +423,28 @@ class WGAN_GP(object):
             captions2 = captions2.data.numpy()
         return captions1, captions2
 
-    # Gradient penalty for WGAN-GP
+    # Gradient penalty calculation for WGAN-GP
     def calculate_gradient_penalty(self, real_images, fake_images):
+        """
+        Calculates gradient penalty for WGAN-GP.
+
+        Args:
+            real_images: Real images batch.
+            fake_images: Generated fake images batch.
+
+        Returns:
+            grad_penalty: Computed gradient penalty term.
+        """
         eta = torch.FloatTensor(self.batch_size, 1, 1, 1, 1).uniform_(0, 1)
         eta = eta.expand(self.batch_size, real_images.size(1), real_images.size(2), real_images.size(3), real_images.size(4))
         if self.cuda:
             eta = eta.cuda(self.cuda_index)
 
-        # Interpolation of real and fake images
+        # Interpolate between real and fake images
         interpolated = eta * real_images + ((1 - eta) * fake_images)
         interpolated = Variable(interpolated, requires_grad=True)
 
-        # Compute discriminator output
+        # Get discriminator output for interpolated images
         prob_interpolated = self.D(interpolated)
 
         # Compute gradients of interpolated images
@@ -351,12 +456,15 @@ class WGAN_GP(object):
             retain_graph=True
         )[0]
 
-        # Gradient penalty term
+        # Compute gradient penalty term
         grad_penalty = ((gradients.norm(2, dim=1) - 1) ** 2).mean() * self.lambda_term
         return grad_penalty
 
-    # Function to save model checkpoints
+    # Function to save models
     def save_model(self):
+        """
+        Saves the generator, discriminator, GNN interface, encoder, and decoder models to files.
+        """
         torch.save(self.G.state_dict(), './generator.pkl')
         torch.save(self.D.state_dict(), './discriminator.pkl')
         torch.save(self.gnn_interface_model.state_dict(), './gnn_interface_model.pkl')
@@ -364,9 +472,22 @@ class WGAN_GP(object):
         torch.save(self.decoder.state_dict(), './decoder.pkl')
         print('Models saved to ./generator.pkl & ./discriminator.pkl & ./gnn_interface_model.pkl & ./encoder.pkl & ./decoder.pkl')
 
-    # Function to load models from checkpoints
+    # Function to load saved models
     def load_model(self, D_model_filename='./discriminator.pkl', G_model_filename='./generator.pkl',
                   gnn_model_filename='./gnn_interface_model.pkl', encoder_file='./encoder.pkl', decoder_file='./decoder.pkl'):
+        """
+        Loads the saved generator, discriminator, GNN interface, encoder, and decoder models.
+
+        Args:
+            D_model_filename (str): Filename of the saved discriminator model.
+            G_model_filename (str): Filename of the saved generator model.
+            gnn_model_filename (str): Filename of the saved GNN interface model.
+            encoder_file (str): Filename of the saved encoder model.
+            decoder_file (str): Filename of the saved decoder model.
+
+        Returns:
+            None
+        """
         D_model_path = os.path.join(os.getcwd(), D_model_filename)
         G_model_path = os.path.join(os.getcwd(), G_model_filename)
         self.D.load_state_dict(torch.load(D_model_path))
@@ -376,8 +497,17 @@ class WGAN_GP(object):
         self.encoder.load_state_dict(torch.load(encoder_file))
         self.decoder.load_state_dict(torch.load(decoder_file))
 
-    # Infinite batch loader
+    # Infinite batch loader for continuous training
     def get_infinite_batches(self, data_loader):
+        """
+        Generates an infinite stream of batches from a DataLoader.
+
+        Args:
+            data_loader: The DataLoader to get batches from.
+
+        Yields:
+            A batch of data.
+        """
         while True:
             for i, data in tqdm(enumerate(data_loader)):
                 yield data
