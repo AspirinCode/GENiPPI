@@ -17,6 +17,18 @@ Protein-protein interactions (PPIs) play a crucial role in numerous biochemical 
 ## Acknowledgements
 The code in this repository is based on their source code release (https://github.com/AspirinCode/iPPIGAN and https://github.com/kiharalab/GNN_DOVE). If you find this code useful, please consider citing their work.
 
+
+## News!
+
+
+
+**[2024/11/11]** Accepted in **Journal of Cheminformatics**, 2024.  
+
+**[2024/03/15]** submission to **Journal of Cheminformatics**, 2024.  
+
+**[2023/10/10]** submission to **bioRxiv**, 2023.  
+
+
 ## Requirements
 ```python
 Python==3.6
