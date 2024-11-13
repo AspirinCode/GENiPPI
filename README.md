@@ -189,7 +189,6 @@ Code is released under GNU AFFERO GENERAL PUBLIC LICENSE.
 
 ## Cite:
 
-*  Under Review
 
 *  Jianmin Wang, Jiashun Mao, Chunyan Li, Hongxin Xiang, Xun Wang, Shuang Wang, Zixu Wang, Yangyang Chen, Yuquan Li, Kyoung Tai No, Tao Song, Xiangxiang Zeng; Interface-aware molecular generative framework for protein-protein interaction modulators. bioRxiv 2023.10.10.557742; doi: https://doi.org/10.1101/2023.10.10.557742
 
