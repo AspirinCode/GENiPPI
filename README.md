@@ -190,7 +190,7 @@ Code is released under GNU AFFERO GENERAL PUBLIC LICENSE.
 ## Cite:
 
 
-*  Jianmin Wang, Jiashun Mao, Chunyan Li, Hongxin Xiang, Xun Wang, Shuang Wang, Zixu Wang, Yangyang Chen, Yuquan Li, Kyoung Tai No, Tao Song, Xiangxiang Zeng; Interface-aware molecular generative framework for protein-protein interaction modulators. bioRxiv 2023.10.10.557742; doi: https://doi.org/10.1101/2023.10.10.557742
+*  Jianmin Wang, Jiashun Mao, Chunyan Li, Hongxin Xiang, Xun Wang, Shuang Wang, Zixu Wang, Yangyang Chen, Yuquan Li, Kyoung Tai No, Tao Song, Xiangxiang Zeng; Interface-aware molecular generative framework for protein-protein interaction modulators.  J Cheminform (2024). doi: https://doi.org/10.1186/s13321-024-00930-0
 
 *  Jianmin Wang, Yanyi Chu, Jiashun Mao, Hyeon-Nae Jeon, Haiyan Jin, Amir Zeb, Yuil Jang, Kwang-Hwi Cho, Tao Song, Kyoung Tai No, De novo molecular design with deep molecular generative models for PPI inhibitors, Briefings in Bioinformatics, 2022;, bbac285, https://doi.org/10.1093/bib/bbac285
 
