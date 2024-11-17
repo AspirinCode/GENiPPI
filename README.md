@@ -1,4 +1,5 @@
 [![License: GNU](https://img.shields.io/badge/License-GNU-yellow)](https://github.com/AspirinCode/GENiPPI)
+[![ J. Cheminform.](https://img.shields.io/badge/%20J%20Cheminform%20(2024)-red)](https://doi.org/10.1186/s13321-024-00930-0)
 [![bioRxiv](https://img.shields.io/badge/bioRxiv%202023.10.10.557742-green)](https://doi.org/10.1101/2023.10.10.557742)
 [![Zenodo](https://img.shields.io/badge/10.5281%2Fzenodo.13968591-gray)](https://zenodo.org/records/13968592)
 
