@@ -21,7 +21,7 @@ The code in this repository is based on their source code release (https://githu
 
 ## News!
 
-
+**[2024/11/20]** Available online **Journal of Cheminformatics**, 2024.  
 
 **[2024/11/11]** Accepted in **Journal of Cheminformatics**, 2024.  
 
